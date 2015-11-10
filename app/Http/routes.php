@@ -11,6 +11,21 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function ()
+{
     return view('welcome');
 });
+
+Route::get('redditor', [
+    'uses' => 'RedditorsController@index',
+    'as'   => 'redditor.index'
+]);
+Route::get('redditor/{redditor}', [
+    'uses' => 'RedditorsController@show',
+    'as'   => 'redditor.show'
+]);
+
+Route::get('frontpage', [
+    'as'   => 'frontpage',
+    'uses' => 'PagesController@redditHomePage',
+]);
