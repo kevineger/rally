@@ -2,6 +2,9 @@
 
 namespace App\Repositories;
 
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use phpRAW\phpRAW as phpRAW;
 
 class RedditorRepository {
@@ -20,18 +23,43 @@ class RedditorRepository {
      * Get the User Submitted data from the API.
      *
      * @param $user
+     * @param int $limit
+     * @param null $after
      * @return $this
      */
-    public function getUserSubmitted($user)
+    public function getUserSubmitted($user, $limit = 25, $after = null)
     {
-        // If the user submitted data is for a different user, get the correct data.
-        if ($this->user != $user)
+        // If getting info on a new user or adding a page
+        if ($this->user != $user || $after)
         {
-            $this->user_submitted = $this->phpraw->getUserSubmitted($user);
             $this->user = $user;
+            error_log("Adding Page");
+            $cur_page = $this->phpraw->getUserOverview($user, null, null, $limit, $after);
+            $this->appendSubmissions($cur_page->data->children);
+            if ($cur_page->data->after)
+            {
+                $this->getUserSubmitted($user, $limit, $cur_page->data->after);
+            }
         }
 
         return $this;
+    }
+
+    /**
+     * Add submission data to global $user_submitted
+     * @param $children
+     */
+    private function appendSubmissions($children)
+    {
+        if ($this->user_submitted == null)
+        {
+            $this->user_submitted = $children;
+        } else
+        {
+            // Push each of the submissions on the the array
+            foreach ($children as $child)
+                array_push($this->user_submitted, $child);
+        }
     }
 
     /**
@@ -46,7 +74,40 @@ class RedditorRepository {
     }
 
     /**
-     * Get a list of all subreddits a user has posted to.
+     * Helper function to get the top value of the specified attribute.
+     *
+     * t1_ : Comment
+     * t2_ : Account
+     * t3_ : Link
+     * t4_ : Message
+     * t5_ : Subreddit
+     * t6_ : Award
+     * t8_ : PromoCampaign
+     *
+     * @param string $kind
+     * @param $attr
+     * @param bool|true $max
+     */
+    public function getTop($kind = "t3", $attr, $max = true)
+    {
+        $attribute = array();
+        foreach ($this->user_submitted as $key => $listing)
+        {
+            if ($listing->kind == $kind)
+                $attribute[$key] = $listing->data->$attr;
+        }
+
+        if ($max)
+        {
+            return $this->user_submitted[array_search(max($attribute), $attribute)];
+        } else
+        {
+            return $this->user_submitted[array_search(min($attribute), $attribute)];
+        }
+    }
+
+    /**
+     * Get a list and count of all subreddits a user has posted to (link and comments).
      *
      * @return array
      */
@@ -55,7 +116,7 @@ class RedditorRepository {
         $subreddit_post_count = array();
 
         // Count the subreddits
-        foreach ($this->user_submitted->data->children as $listing)
+        foreach ($this->user_submitted as $listing)
         {
             if (!isset($subreddit_post_count[$listing->data->subreddit]))
             {
@@ -75,13 +136,7 @@ class RedditorRepository {
      */
     public function getTopUpVotes()
     {
-        $ups = array();
-        foreach ($this->user_submitted->data->children as $key => $listing)
-        {
-            $ups[$key] = $listing->data->ups;
-        }
-
-        return $this->user_submitted->data->children[array_search(max($ups), $ups)];
+        return $this->getTop('t3', 'ups');
     }
 
     /**
@@ -91,13 +146,7 @@ class RedditorRepository {
      */
     public function getTopDownVotes()
     {
-        $downs = array();
-        foreach ($this->user_submitted->data->children as $key => $listing)
-        {
-            $downs[$key] = $listing->data->downs;
-        }
-
-        return $this->user_submitted->data->children[array_search(max($downs), $downs)];
+        return $this->getTop('t3', 'downs');
     }
 
     /**
@@ -107,7 +156,7 @@ class RedditorRepository {
      */
     public function getLastSubmission()
     {
-        return $this->user_submitted->data->children[0]->data;
+        return $this->user_submitted[0]->data;
     }
 
     /**
@@ -117,18 +166,100 @@ class RedditorRepository {
      */
     public function getSubmissions()
     {
-        return $this->user_submitted->data->children;
+        return $this->user_submitted;
     }
 
+    /**
+     * Helper to get a user's average karma of specified type.
+     *
+     * @param $kind
+     * @return float
+     */
+    public function getAverageSubmission($kind)
+    {
+        $total = 0;
+        $count = 0;
+        foreach ($this->getSubmissions() as $submission)
+        {
+            if ($submission->kind == $kind)
+            {
+                $count++;
+                $total += $submission->data->score;
+            }
+        }
+
+        return $total / $count;
+    }
+
+    /**
+     * Get a user's average submission karma.
+     *
+     * @return float
+     */
     public function getAverageSubmissionKarma()
+    {
+        return $this->getAverageSubmission('t3');
+    }
+
+    /**
+     * Get the user's top comment (highest upvotes).
+     *
+     * @return mixed
+     */
+    public function getTopComment()
+    {
+        return $this->getTop('t1', 'score');
+    }
+
+    /**
+     * Get the user's bottom comment (highest downvotes).
+     *
+     * @return mixed
+     */
+    public function getWorstComment()
+    {
+        return $this->getTop('t1', 'score', false);
+    }
+
+    /**
+     * Get the user's total number of comments.
+     *
+     * @return int
+     */
+    public function getTotalComments()
     {
         $total = 0;
         foreach ($this->getSubmissions() as $submission)
         {
-            $total += $submission->data->score;
+            if ($submission->kind == 't1')
+                $total++;
         }
 
-        return $total / count($this->getSubmissions());
+        return $total;
+    }
+
+    /**
+     * Get a user's average comment karma.
+     *
+     * @return float
+     */
+    public function getAverageCommentKarma()
+    {
+        return $this->getAverageSubmission('t1');
+    }
+
+    public function activeHours()
+    {
+        $hours = array_fill(0,24,0);
+        foreach ($this->getSubmissions() as $submission)
+        {
+            $time = Carbon::createFromTimestampUTC($submission->data->created_utc);
+//            $time->timezone = new DateTimeZone('America/Vancouver');
+            $hour = $time->hour;
+            $hours[$hour]++;
+        }
+
+        return $hours;
     }
 
 }
