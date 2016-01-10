@@ -36,6 +36,9 @@
     "psr-4": {
       "App\\": "app/",
       "phpRAW\\": "vendor/kevin/phpRAW"
+    },
+    "psr-0": {
+      "ExternalAPIs\\": "app/"
     }
   },
   "autoload-dev": {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use ExternalAPIs\Google\GoogleAPI;
+use Google;
 use Google_Service_Bigquery_QueryRequest;
 use App\Http\Controllers\Controller;
 use Google_Service_Bigquery;
@@ -10,6 +12,7 @@ use App\Http\Requests;
 use Google_Client;
 
 class BigDataController extends Controller {
+
     protected $client;
 
     public function __construct()
@@ -26,16 +29,18 @@ class BigDataController extends Controller {
      */
     public function index()
     {
-        $bigquery = new Google_Service_Bigquery($this->client);
-        $projectId = 'redditbigquery';
-        $request = new Google_Service_Bigquery_QueryRequest();
-//        $request->setQuery('SELECT TOP(corpus, 10) as title, COUNT(*) as unique_words ' .
-//            'FROM [publicdata:samples.shakespeare]');
-        $request->setQuery('SELECT DAYOFWEEK(SEC_TO_TIMESTAMP(created - 60*60*5)) as sub_dayofweek, HOUR(SEC_TO_TIMESTAMP(created - 60*60*5)) as sub_hour, SUM(IF(score >= 3000, 1, 0)) as num_gte_3000, FROM [fh-bigquery:reddit_posts.full_corpus_201509] GROUP BY sub_dayofweek, sub_hour ORDER BY sub_dayofweek, sub_hour');
-        $response = $bigquery->jobs->query($projectId, $request);
-        $rows = $response->getRows();
+        $results = Google::query('some_query');
 
-        dd($rows);
+        $data = [];
+        foreach ($results as $row)
+        {
+            foreach ($row['f'] as $field)
+            {
+                $data[] = $field['v'];
+            }
+        }
+
+        dd($data);
 
         return 'Hit Data Index';
     }
