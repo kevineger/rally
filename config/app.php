@@ -147,7 +147,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        ExternalAPIs\Google\GoogleServiceProvider::class
+        ExternalAPIs\Google\GoogleServiceProvider::class,
+        Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
 
     ],
 

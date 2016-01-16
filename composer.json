@@ -14,7 +14,8 @@
     "kevin/phpRAW": "dev-master",
     "laravelcollective/html": "5.1.*",
     "guzzlehttp/guzzle": "^6.1",
-    "google/apiclient": "^2.0.0@RC"
+    "google/apiclient": "^2.0.0@RC",
+    "khill/lavacharts": "2.5.*"
   },
   "require-dev": {
     "fzaninotto/faker": "~1.4",
