@@ -38,7 +38,7 @@
     </div>
     <div class="col-lg-6">
         <h4>Comment Data</h4>
-        <ul>
+        <ul><script type="text/javascript" src="https://www.google.com/jsapi"></script>
             <li>Comment Karma: {{ $redditor->comment_karma }}</li>
             <li>Top Comment: <a
                         href="http://www.reddit.com/r/{{ $top_comment->data->subreddit }}/comments/{{ str_replace("t3_", "", $top_comment->data->link_id) }}/link/{{ $top_comment->data->id }}">{{ $top_comment->data->score }}</a>

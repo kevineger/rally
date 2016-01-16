@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use ExternalAPIs\Google\GoogleAPI;
 use Google;
-use Google_Service_Bigquery_QueryRequest;
-use App\Http\Controllers\Controller;
 use Google_Service_Bigquery;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Google_Client;
+
 
 class BigDataController extends Controller {
 
@@ -29,19 +27,26 @@ class BigDataController extends Controller {
      */
     public function index()
     {
-        $results = Google::query('some_query');
+        $best_hours = Google::query('best_hours');
+        $time_usage = Google::query('time_usage');
 
-        $data = [];
-        foreach ($results as $row)
-        {
-            foreach ($row['f'] as $field)
-            {
-                $data[] = $field['v'];
-            }
+        $results = [];
+        $results['Best Time to Post on Reddit'] = $best_hours;
+//        $results['Time Usage'] = $time_usage;
+        $hours = [];
+        foreach ( $time_usage->getRows() as $row ) {
+            $hours[$row[1]->getV()] = [];
+        }
+        foreach ( $time_usage->getRows() as $row ) {
+//            $hours[$row[1]->getV()][$row[0]->getV()] = $row[2]->getV();
+            array_push($hours[$row[1]->getV()], $row[2]->getV());
         }
 
-        dd($data);
+//        dd($hours);
 
-        return 'Hit Data Index';
+        return response()->view('big-data.index', [
+            'results'    => $results,
+            'time_usage' => $hours
+        ]);
     }
 }

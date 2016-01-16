@@ -27,6 +27,6 @@ class GoogleAPI {
         $request->setQuery(config("constants.$query"));
         $response = $bigquery->jobs->query($projectId, $request);
 
-        return $response->getRows();
+        return $response;
     }
 }
