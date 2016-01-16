@@ -11,8 +11,7 @@
 |
 */
 
-Route::get('/', function ()
-{
+Route::get('/', function () {
     return view('welcome');
 });
 
@@ -24,7 +23,14 @@ Route::get('redditor/{redditor}', [
     'uses' => 'RedditorsController@show',
     'as'   => 'redditor.show'
 ]);
-
+Route::get('image', [
+    'uses' => 'ImagesController@index',
+    'as'   => 'image.index'
+]);
+Route::get('big-data', [
+    'uses' => 'BigDataController@index',
+    'as'   => 'data.index'
+]);
 Route::get('frontpage', [
     'as'   => 'frontpage',
     'uses' => 'PagesController@redditHomePage',
