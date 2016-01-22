@@ -11,7 +11,8 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/', function ()
+{
     return view('welcome');
 });
 
@@ -27,10 +28,18 @@ Route::get('image', [
     'uses' => 'ImagesController@index',
     'as'   => 'image.index'
 ]);
-Route::get('big-data', [
-    'uses' => 'BigDataController@index',
-    'as'   => 'data.index'
-]);
+Route::group(['prefix' => 'big-data'], function ()
+{
+    Route::get('/', [
+        'uses' => 'BigDataController@index',
+        'as'   => 'data.index'
+    ]);
+    Route::get('updateChart', [
+        'uses' => 'BigDataController@updateChart',
+        'as'   => 'data.update'
+    ]);
+});
+
 Route::get('frontpage', [
     'as'   => 'frontpage',
     'uses' => 'PagesController@redditHomePage',
