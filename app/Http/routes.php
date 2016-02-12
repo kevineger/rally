@@ -39,6 +39,10 @@ Route::group(['prefix' => 'big-data'], function ()
         'as'   => 'data.update'
     ]);
 });
+Route::get('cluster', [
+    'uses' => 'ClustersController@index',
+    'as'   => 'cluster.index'
+]);
 
 Route::get('frontpage', [
     'as'   => 'frontpage',
