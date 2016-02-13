@@ -17,60 +17,61 @@ class ClusterRepository {
 
     public function getSubredditSubmissionHistory($subreddit)
     {
+        $cluster_info = Google::query('cluster_info_posts', $subreddit);
+        $matrix = $this->getMatrix($cluster_info);
+
         // Currently limiting return data to 100,000 rows as per the
         // google bigquery default response size
         // resource: https://cloud.google.com/bigquery/docs/data
-        $cluster_info = Google::query('cluster_info', $subreddit);
-        error_log("Finished collecting info");
-        $authors = Google::query('cluster_authors', $subreddit);
-        error_log("Finished collecting authors");
-        $link_ids = Google::query('cluster_link_ids', $subreddit);
-        error_log("Finished collecting link ids");
+        /*$cluster_info = Google::query('cluster_info', $subreddit);
+        error_log("Finished collecting info");*/
 
         // Generate usable matrix from cluster info
-        $matrix = $this->getMatrix($cluster_info, $authors, $link_ids);
+//        $matrix = $this->getMatrix($cluster_info);
 
         // Write matrix to text file to be used by python script
 
         // Return path to text file
     }
 
-    private function getMatrix($cluster_info, $authors, $link_ids)
+    private function getMatrix($cluster_info)
     {
-        error_log("Processing author list");
-        // Put the author info in to a usable form
-        $author_list = [];
-        foreach ($authors->getRows() as $row)
-        {
-            $author_list[] = $row[0]->getV();
-        }
-
-        error_log("Processing link_id list");
-        // Put the author info in to a usable form
-        $link_ids_list = [];
-        foreach ($link_ids->getRows() as $row)
-        {
-            $link_ids_list[] = $row[0]->getV();
-        }
-
-        error_log("Processing value list");
+        error_log("Processing info");
         // Put the cluster info in to a usable form
         $values = [];
+        $users = [];
+        $links = [];
+        $count = 0;
         foreach ($cluster_info->getRows() as $row)
         {
+            // Save the number of times a user commented on a post
             // result[author][link_id] = count
             $values[$row[0]->getV()][$row[1]->getV()] = $row[2]->getV();
+
+            // Save unique users
+            if (!in_array($row[0]->getV(), $users))
+            {
+                $users[] = $row[0]->getV();
+            }
+
+            // Save unique link_ids
+            if (!in_array($row[1]->getV(), $links))
+            {
+                $links[] = $row[1]->getV();
+            }
+            $count++;
         }
 
-        error_log("Building resulting matrix");
-        error_log("Number of authors: " . sizeof($author_list));
-        error_log("Number of posts: " . sizeof($link_ids_list));
+        error_log("Count: " . $count);
+        error_log("Number of authors: " . sizeof($users));
+        error_log("Number of posts: " . sizeof($links));
 
+        error_log("Building Matrix");
         // Build up full result matrix
         $result = [];
-        foreach ($author_list as $auth_key => $author)
+        foreach ($users as $auth_key => $author)
         {
-            foreach ($link_ids_list as $link_key => $link_id)
+            foreach ($links as $link_key => $link_id)
             {
                 // If an author commented on a link
                 if (array_key_exists($link_id, $values[$author]))
@@ -83,9 +84,6 @@ class ClusterRepository {
                 }
             }
         }
-
-//        error_log("Dumping resulting matrix");
-//        dd($result);
 
         error_log("Creating json file");
         file_put_contents('/home/kevin/Downloads/matrix.json', json_encode($result));
