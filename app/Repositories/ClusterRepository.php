@@ -17,21 +17,19 @@ class ClusterRepository {
 
     public function getSubredditSubmissionHistory($subreddit)
     {
+//        $cluster_info = Google::query('cluster_info_posts', $subreddit);
         $cluster_info = Google::query('cluster_info_posts', $subreddit);
         $matrix = $this->getMatrix($cluster_info);
 
-        // Currently limiting return data to 100,000 rows as per the
-        // google bigquery default response size
-        // resource: https://cloud.google.com/bigquery/docs/data
-        /*$cluster_info = Google::query('cluster_info', $subreddit);
-        error_log("Finished collecting info");*/
+        error_log("Creating json file");
+        $json_location = '/home/kevin/Downloads/matrix.json';
+        file_put_contents($json_location, json_encode($matrix));
+        error_log("Json file created");
 
-        // Generate usable matrix from cluster info
-//        $matrix = $this->getMatrix($cluster_info);
+        $path_to_image = [];
+        exec('python /home/kevin/Development/COSC449/clustering/cluster_json_md_array.py', $path_to_image);
 
-        // Write matrix to text file to be used by python script
-
-        // Return path to text file
+        return $path_to_image;
     }
 
     private function getMatrix($cluster_info)
@@ -41,7 +39,7 @@ class ClusterRepository {
         $values = [];
         $users = [];
         $links = [];
-        $count = 0;
+        $countAuthors = 0;
         foreach ($cluster_info->getRows() as $row)
         {
             // Save the number of times a user commented on a post
@@ -51,7 +49,11 @@ class ClusterRepository {
             // Save unique users
             if (!in_array($row[0]->getV(), $users))
             {
+//                if($countAuthors == 1074) {
+//                    dd($row);
+//                }
                 $users[] = $row[0]->getV();
+                $countAuthors++;
             }
 
             // Save unique link_ids
@@ -59,10 +61,9 @@ class ClusterRepository {
             {
                 $links[] = $row[1]->getV();
             }
-            $count++;
         }
 
-        error_log("Count: " . $count);
+        error_log("countAuthors: " . $countAuthors);
         error_log("Number of authors: " . sizeof($users));
         error_log("Number of posts: " . sizeof($links));
 
@@ -85,10 +86,6 @@ class ClusterRepository {
             }
         }
 
-        error_log("Creating json file");
-        file_put_contents('/home/kevin/Downloads/matrix.json', json_encode($result));
-        error_log("Json file created");
-
-        return null;
+        return $result;
     }
 }
