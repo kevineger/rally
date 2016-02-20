@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cluster;
 use App\Repositories\ClusterRepository;
 use Google_Client;
 use Illuminate\Http\Request;
@@ -54,11 +55,21 @@ class ClustersController extends Controller {
      */
     public function clusterSubreddit(Request $request)
     {
-        // Perform the clustering and return the path to image.
-        $path = $this->cluster->getSubredditSubmissionHistory($request->get('subreddit'));
+        $subreddit = $request->get('subreddit');
 
-        $file = explode("/", $path[0]);
-        $exec = exec("cp $path[0] " . public_path($file[sizeof($file) - 1]));
-        return response()->json(['path_to_image' => $file[sizeof($file) - 1]]);
+        // Look for cached cluster
+        $cluster_image = Cluster::where('name', $subreddit)->first();
+
+        // Else, perform new clustering
+        if($cluster_image == null) {
+            // Perform the clustering and return the path to image.
+            $path = $this->cluster->getSubredditSubmissionHistory($subreddit);
+
+            // Save a copy of image to public folder
+            $cluster_image = Cluster::named($subreddit);
+            $cluster_image->move($path);
+        }
+
+        return response()->json(['path_to_image' => $cluster_image->path]);
     }
 }

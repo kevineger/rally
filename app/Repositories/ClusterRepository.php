@@ -17,19 +17,19 @@ class ClusterRepository {
 
     public function getSubredditSubmissionHistory($subreddit)
     {
-//        $cluster_info = Google::query('cluster_info_posts', $subreddit);
         $cluster_info = Google::query('cluster_info_posts', $subreddit);
         $matrix = $this->getMatrix($cluster_info);
 
         error_log("Creating json file");
-        $json_location = '/home/kevin/Downloads/matrix.json';
+        $json_location = env('JSON_MATRIX_LOCATION');
         file_put_contents($json_location, json_encode($matrix));
         error_log("Json file created");
 
         $path_to_image = [];
-        exec('python /home/kevin/Development/COSC449/clustering/cluster_json_md_array.py', $path_to_image);
+        $cluster_script = env('CLUSTER_SCRIPT');
+        exec("python $cluster_script", $path_to_image);
 
-        return $path_to_image;
+        return $path_to_image[0];
     }
 
     private function getMatrix($cluster_info)
