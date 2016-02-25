@@ -59,6 +59,7 @@ Route::group(['prefix' => 'cluster'], function ()
         'uses' => 'ClustersController@clusterSubreddit',
         'as'   => 'cluster.getData'
     ]);
+    Route::get('test', 'ClustersController@forceRecluster');
     Route::get('{subreddit}', [
         'uses' => 'ClustersController@show',
         'as'   => 'cluster.show'

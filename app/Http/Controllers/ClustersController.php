@@ -61,7 +61,8 @@ class ClustersController extends Controller {
         $cluster_image = Cluster::where('name', $subreddit)->first();
 
         // Else, perform new clustering
-        if($cluster_image == null) {
+        if ($cluster_image == null)
+        {
             // Perform the clustering and return the path to image.
             $path = $this->cluster->getSubredditSubmissionHistory($subreddit);
 
@@ -71,5 +72,19 @@ class ClustersController extends Controller {
         }
 
         return response()->json(['path_to_image' => $cluster_image->path]);
+    }
+
+    /**
+     * Test method for ensuring reclustering of subreddit.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function forceRecluster(Request $request)
+    {
+        $subreddit = $request->get('subreddit');
+
+        // Perform the clustering and return the path to image.
+        $this->cluster->getSubredditSubmissionHistory($subreddit);
     }
 }

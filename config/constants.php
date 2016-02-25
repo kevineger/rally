@@ -16,7 +16,7 @@ return [
     'cluster_info'       => 'SELECT author, link_id, COUNT(id) as cnt FROM ( SELECT author, link_id, id FROM [fh-bigquery:reddit_comments.2016_01] WHERE subreddit = (%subreddits) AND author != \'[deleted]\' ORDER BY created_utc DESC LIMIT 10000 ) GROUP BY author, link_id ORDER BY author',
 
     // Clustering Subreddits by most recent comments on posts
-    'cluster_info_posts' => 'SELECT author, link_id, COUNT(link_id) as cnt FROM ( SELECT * FROM [fh-bigquery:reddit_comments.2016_01], [fh-bigquery:reddit_comments.2015_12], [fh-bigquery:reddit_comments.2015_11] ) WHERE link_id IN ( SELECT posts.name FROM [fh-bigquery:reddit_posts.full_corpus_201512] AS posts WHERE posts.subreddit = (%subreddits) AND posts.num_comments > 0 ORDER BY posts.created_utc DESC LIMIT 300 ) AND author != \'[deleted]\' AND author != \'Lamont-Cranston\' GROUP BY author, link_id ORDER BY author',
+    'cluster_info_posts' => 'SELECT author, link_id, COUNT(link_id) as cnt FROM ( SELECT * FROM [fh-bigquery:reddit_comments.2016_01], [fh-bigquery:reddit_comments.2015_12], [fh-bigquery:reddit_comments.2015_11] ) WHERE link_id IN ( SELECT posts.name FROM [fh-bigquery:reddit_posts.full_corpus_201512] AS posts WHERE posts.subreddit = (%subreddits) AND posts.num_comments > 0 ORDER BY posts.created_utc DESC LIMIT 300 ) AND author != \'[deleted]\' AND author != \'AutoModerator\' GROUP BY author, link_id ORDER BY author',
 
 
     // Retrive subreddits from bigqueryu (verify they are there) - Usefull for testing
