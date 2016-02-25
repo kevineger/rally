@@ -28,6 +28,10 @@ Route::get('image', [
     'uses' => 'ImagesController@index',
     'as'   => 'image.index'
 ]);
+Route::get('top-images/{subreddit}', [
+    'uses' => 'ImagesController@analyzeSubreddit',
+    'as'   => 'image.analyze'
+]);
 Route::group(['prefix' => 'big-data'], function ()
 {
     Route::get('/', [
@@ -39,6 +43,29 @@ Route::group(['prefix' => 'big-data'], function ()
         'as'   => 'data.update'
     ]);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Subreddit Clustering
+|--------------------------------------------------------------------------
+*/
+Route::group(['prefix' => 'cluster'], function ()
+{
+    Route::get('/', [
+        'uses' => 'ClustersController@index',
+        'as'   => 'cluster.index'
+    ]);
+    Route::get('get-data', [
+        'uses' => 'ClustersController@clusterSubreddit',
+        'as'   => 'cluster.getData'
+    ]);
+    Route::get('test', 'ClustersController@forceRecluster');
+    Route::get('{subreddit}', [
+        'uses' => 'ClustersController@show',
+        'as'   => 'cluster.show'
+    ]);
+});
+
 
 Route::get('frontpage', [
     'as'   => 'frontpage',

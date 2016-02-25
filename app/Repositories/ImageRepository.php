@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Image;
 
 class ImageRepository {
+
     private $client;
     private $response;
     protected $results;
@@ -24,15 +25,18 @@ class ImageRepository {
     {
         // If image has been cached, load cached analysis.
         $image = Image::where('url', $url)->first();
-        if ( $image ) {
-            $this->results = json_decode($image->analysis);
+        if ($image)
+        {
+            $this->results = json_decode($image->analysis, $assoc = true);
 
             return $this;
         }
 
         // Perform analysis and save results.
         $this->response = $this->client->post("images", ['json' => ['url' => $url]]);
+        // Decode response from json to usable php array
         $this->results = json_decode($this->response->getBody(), true);
+        // Cache results of analysis from image (store as json)
         Image::create([
             'url'      => $url,
             'analysis' => json_encode($this->results)
@@ -48,7 +52,6 @@ class ImageRepository {
      */
     public function getAll()
     {
-        dd($this->results);
         arsort($this->results);
 
         return $this->results;
@@ -78,7 +81,8 @@ class ImageRepository {
     {
         $results = $this->getAll();
 
-        $likely = collect($results)->filter(function ($probability) use ($prob) {
+        $likely = collect($results)->filter(function ($probability) use ($prob)
+        {
             return $probability > $prob;
         });
 

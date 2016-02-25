@@ -149,6 +149,7 @@ return [
 
         ExternalAPIs\Google\GoogleServiceProvider::class,
         Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
+        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -201,6 +202,7 @@ return [
         'Form'      => Collective\Html\FormFacade::class,
         'Html'      => Collective\Html\HtmlFacade::class,
         'Google'    => 'ExternalAPIs\Google\Google',
+        'Image'     => Intervention\Image\Facades\Image::class
 
     ],
 

@@ -3,7 +3,7 @@ namespace PHPSTORM_META {
 
    /**
     * PhpStorm Meta file, to provide autocomplete information for PhpStorm
-    * Generated on 2016-01-16.
+    * Generated on 2016-02-20.
     *
     * @author Barry vd. Heuvel <barryvdh@gmail.com>
     * @see https://github.com/barryvdh/laravel-ide-helper
@@ -41,6 +41,7 @@ namespace PHPSTORM_META {
             'view' instanceof \Illuminate\View\Factory,
             'google' instanceof \ExternalAPIs\Google\GoogleAPI,
             'lavacharts' instanceof \Khill\Lavacharts\Lavacharts,
+            'image' instanceof \Intervention\Image\ImageManager,
             'blade.compiler' instanceof \Illuminate\View\Compilers\BladeCompiler,
             'command.app.name' instanceof \Illuminate\Foundation\Console\AppNameCommand,
             'command.clear-compiled' instanceof \Illuminate\Foundation\Console\ClearCompiledCommand,
@@ -156,6 +157,7 @@ namespace PHPSTORM_META {
             'view' instanceof \Illuminate\View\Factory,
             'google' instanceof \ExternalAPIs\Google\GoogleAPI,
             'lavacharts' instanceof \Khill\Lavacharts\Lavacharts,
+            'image' instanceof \Intervention\Image\ImageManager,
             'blade.compiler' instanceof \Illuminate\View\Compilers\BladeCompiler,
             'command.app.name' instanceof \Illuminate\Foundation\Console\AppNameCommand,
             'command.clear-compiled' instanceof \Illuminate\Foundation\Console\ClearCompiledCommand,
@@ -271,6 +273,7 @@ namespace PHPSTORM_META {
             'view' instanceof \Illuminate\View\Factory,
             'google' instanceof \ExternalAPIs\Google\GoogleAPI,
             'lavacharts' instanceof \Khill\Lavacharts\Lavacharts,
+            'image' instanceof \Intervention\Image\ImageManager,
             'blade.compiler' instanceof \Illuminate\View\Compilers\BladeCompiler,
             'command.app.name' instanceof \Illuminate\Foundation\Console\AppNameCommand,
             'command.clear-compiled' instanceof \Illuminate\Foundation\Console\ClearCompiledCommand,
@@ -386,6 +389,7 @@ namespace PHPSTORM_META {
             'view' instanceof \Illuminate\View\Factory,
             'google' instanceof \ExternalAPIs\Google\GoogleAPI,
             'lavacharts' instanceof \Khill\Lavacharts\Lavacharts,
+            'image' instanceof \Intervention\Image\ImageManager,
             'blade.compiler' instanceof \Illuminate\View\Compilers\BladeCompiler,
             'command.app.name' instanceof \Illuminate\Foundation\Console\AppNameCommand,
             'command.clear-compiled' instanceof \Illuminate\Foundation\Console\ClearCompiledCommand,

@@ -30,10 +30,18 @@ class GoogleAPI {
         $projectId = 'redditbigquery';
         $request = new Google_Service_Bigquery_QueryRequest();
 
-        // If subreddits were specified for the query, find and replace them.
-        if ($subreddits) $subredditsList = '"' . implode('", "', $subreddits) . '"';
-        else
+        $subredditsList = '';
+        if ($subreddits && is_array($subreddits))
         {
+            // If multiple subreddits were specified (array)
+            $subredditsList = '"' . implode('", "', $subreddits) . '"';
+        } else if ($subreddits)
+        {
+            // If one subreddit was specified
+            $subredditsList = '"' . $subreddits . '"';
+        } else
+        {
+            // Load the default (top 5) subreddits
             $subreddits = [];
             $popular_subreddits = $this->reddit->getPopularSubreddits(5);
             // Build list of top subreddits
@@ -44,6 +52,7 @@ class GoogleAPI {
             $subredditsList = '"' . implode('", "', $subreddits) . '"';
             $this->subredditsList = $subredditsList;
         }
+        // Replace the default subreddits in query with specified ones
         $request->setQuery(str_replace("%subreddits", $subredditsList, config("constants.$query")));
         $response = $bigquery->jobs->query($projectId, $request);
 
