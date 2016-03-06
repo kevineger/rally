@@ -1,18 +1,16 @@
 @extends('app')
 
 @section('content')
-    <h1>rally</h1>
-    <hr>
-    {!! Form::open(['url' => 'redditor/show','method' => 'get']) !!}
+    @include('page-header')
 
-    <div class="col-lg-6 col-lg-offset-3">
-        <div class="input-group">
-            <input name="redditor" type="text" class="form-control" placeholder="Lookup a user by username">
-            <span class="input-group-btn">
-                <button class="btn btn-default" type="submit">Search</button>
-            </span>
+    <div class="ui grid">
+        <div class="six wide column">
+            {!! Form::open(['url' => 'redditor/show','method' => 'get']) !!}
+            <div class="ui fluid large icon input">
+                <input name="redditor" placeholder="Lookup a user by username" type="text">
+                <i type="submit" class="inverted circular search link icon"></i>
+            </div>
+            {!! Form::close() !!}
         </div>
     </div>
-
-    {!! Form::close() !!}
 @endsection
