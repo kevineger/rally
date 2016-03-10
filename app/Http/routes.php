@@ -11,8 +11,7 @@
 |
 */
 
-Route::get('/', function ()
-{
+Route::get('/', function () {
     return view('home');
 });
 
@@ -32,8 +31,7 @@ Route::get('top-images/{subreddit}', [
     'uses' => 'ImagesController@analyzeSubreddit',
     'as'   => 'image.analyze'
 ]);
-Route::group(['prefix' => 'big-data'], function ()
-{
+Route::group(['prefix' => 'big-data'], function () {
     Route::get('/', [
         'uses' => 'BigDataController@index',
         'as'   => 'data.index'
@@ -46,28 +44,37 @@ Route::group(['prefix' => 'big-data'], function ()
 
 /*
 |--------------------------------------------------------------------------
-| Subreddit Clustering
+| Clustering
 |--------------------------------------------------------------------------
 */
-Route::group(['prefix' => 'cluster'], function ()
-{
+Route::group(['prefix' => 'subreddit'], function () {
     Route::get('/', [
-        'uses' => 'ClustersController@index',
+        'uses' => 'SubredditController@index',
         'as'   => 'cluster.index'
     ]);
     Route::get('get-data', [
-        'uses' => 'ClustersController@clusterSubreddit',
+        'uses' => 'SubredditController@clusterSubreddit',
         'as'   => 'cluster.getData'
     ]);
-    Route::get('test', 'ClustersController@forceRecluster');
+    Route::get('test', 'SubredditController@forceRecluster');
     Route::get('{subreddit}', [
-        'uses' => 'ClustersController@show',
+        'uses' => 'SubredditController@show',
         'as'   => 'cluster.show'
     ]);
 });
 
-
-Route::get('frontpage', [
-    'as'   => 'frontpage',
-    'uses' => 'PagesController@redditHomePage',
-]);
+/*
+|--------------------------------------------------------------------------
+| Subreddit
+|--------------------------------------------------------------------------
+*/
+Route::group(['prefix' => 'subreddit'], function () {
+    Route::get('/', [
+        'as'   => 'subreddit.index',
+        'uses' => 'SubredditController@index',
+    ]);
+    Route::get('show', [
+        'as'   => 'subreddit.show',
+        'uses' => 'SubredditController@show',
+    ]);
+});

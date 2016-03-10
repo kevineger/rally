@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class ClustersController extends Controller {
+class SubredditController extends Controller {
 
     protected $client;
     protected $cluster;
@@ -26,14 +26,15 @@ class ClustersController extends Controller {
     }
 
     /**
-     * Display the view to specify subreddit.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return response()->view('cluster.index');
-//        $this->dispatchFrom('App\Jobs\ClusterSubreddit', $request);
+        return response()->view('subreddit.index', [
+            'tagline' => 'View information about a specific subreddit'
+        ]);
     }
 
     /**
@@ -44,7 +45,10 @@ class ClustersController extends Controller {
      */
     public function show(Request $request)
     {
-        return response()->view('cluster.show', ['subreddit' => $request->get('subreddit')]);
+        return response()->view('subreddit.show', [
+            'subreddit' => $request->get('subreddit'),
+            'tagline'   => 'A look at /r/' . $request->get('subreddit')
+        ]);
     }
 
     /**
@@ -61,8 +65,7 @@ class ClustersController extends Controller {
         $cluster_image = Cluster::where('name', $subreddit)->first();
 
         // Else, perform new clustering
-        if ($cluster_image == null)
-        {
+        if ( $cluster_image == null ) {
             // Perform the clustering and return the path to image.
             $path = $this->cluster->getSubredditSubmissionHistory($subreddit);
 

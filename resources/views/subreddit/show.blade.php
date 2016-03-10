@@ -5,9 +5,7 @@
 @endsection
 
 @section('content')
-    <h1>rally</h1>
-    <hr>
-    <h2>Clustering of {{ $subreddit }}</h2>
+    @include('page-header')
     <p id="status">Loading</p>
     <div class="cluster-container">
     </div>
@@ -22,7 +20,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: "GET",
-                url: "/cluster/get-data",
+                url: "/subreddit/get-data",
                 data: {
                     subreddit: '{!! $subreddit !!}'
                 }

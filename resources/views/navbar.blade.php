@@ -4,5 +4,5 @@
     </div>
     <a href="{{ url('/redditor') }}" class="item">User Stats</a>
     <a href="{{ url('/big-data') }}" class="item">Big Data</a>
-    <a href="{{ url('/cluster') }}" class="item">Clustering</a>
+    <a href="{{ url('/subreddit') }}" class="item">Subreddit</a>
 </div>
