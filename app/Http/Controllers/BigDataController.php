@@ -22,8 +22,8 @@ class BigDataController extends Controller {
     public function __construct(ChartRepository $chart)
     {
         $this->client = new Google_Client();
-        $this->client->useApplicationDefaultCredentials();
-        $this->client->addScope(\Google_Service_Bigquery::BIGQUERY);
+        $this->client->useApplicationDefaultCredentials(\Google_Service_Bigquery::BIGQUERY);
+//        $this->client->addScope(\Google_Service_Bigquery::BIGQUERY);
 
         $this->chart_data = $chart;
     }
