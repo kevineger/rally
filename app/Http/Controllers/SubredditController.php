@@ -9,11 +9,13 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use phpRAW\phpRAW;
 
 class SubredditController extends Controller {
 
     protected $client;
     protected $cluster;
+    protected $phpraw;
 
     public function __construct()
     {
@@ -21,6 +23,8 @@ class SubredditController extends Controller {
         $this->client = new Google_Client();
         $this->client->useApplicationDefaultCredentials();
         $this->client->addScope(\Google_Service_Bigquery::BIGQUERY);
+
+        $this->phpraw = new phpRAW();
 
         $this->cluster = new ClusterRepository($this->client);
     }
@@ -45,9 +49,14 @@ class SubredditController extends Controller {
      */
     public function show(Request $request)
     {
+        $subreddit = $request->get('subreddit');
+
+        $about = $this->phpraw->aboutSubreddit($subreddit);
+
         return response()->view('subreddit.show', [
-            'subreddit' => $request->get('subreddit'),
-            'tagline'   => 'A look at /r/' . $request->get('subreddit')
+            'subreddit' => $subreddit,
+            'about'     => $about->data,
+            'tagline'   => 'A look at /r/' . $subreddit
         ]);
     }
 

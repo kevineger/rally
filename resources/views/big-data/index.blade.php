@@ -66,6 +66,9 @@
     <script type="text/javascript" src="{{ asset('js/all.js') }}"></script>
     <script>
         $('table').tablesort();
+        $('thead th.subreddit').data('sortBy', function(th, td, tablesort) {
+            return td.toLowerCase();
+        });
     </script>
     {{--Google Chart--}}
     {!! Lava::render('LineChart', 'myFancyChart', 'activityChart') !!}
