@@ -8,43 +8,47 @@
 @endsection
 
 @section('content')
-    {{--{{ dd($time_usage) }}--}}
-    <h1>rally</h1>
-    <h3>Big-Data</h3>
-    <hr>
-    <div class="col-lg-12">
-        <div id="myStocks"></div>
-    </div>
-    <div class="col-lg-6 col-lg-offset-3">
-        <select class="subreddits-multiple" multiple="multiple" value="funny,pics">
-            @foreach( $subreddits->getRows() as $row )
-                @foreach( $row->getF() as $field )
-                    <option value="{{ $field->getV() }}">{{ $field->getV() }}</option>
-                @endforeach
-            @endforeach
-        </select>
-    </div>
-    <div class="col-lg-6 col-lg-offset-3">
-        <div class="btn-group btn-group-sm">
-            <div id="default-btn" class="btn btn-default">
-                Top Subreddits
-            </div>
-            <div id="clear-btn" class="btn btn-default">
-                Clear
+    @include('page-header')
+    <div class="ui one column centered grid">
+        <div class="column">
+            <div class="ui segment">
+                <div class="ui inverted dimmer">
+                    <div class="ui medium text loader">Loading</div>
+                </div>
+                <div id="activityChart"></div>
             </div>
         </div>
-        <button id="refresh">Redraw Chart</button>
+        <div class="ui middle aligned four column centered row">
+            <div class="column">
+                <select style="text-align:center" class="subreddits-multiple" multiple="multiple">
+                    @foreach( $subreddits->getRows() as $row )
+                        @foreach( $row->getF() as $field )
+                            <option value="{{ $field->getV() }}">{{ $field->getV() }}</option>
+                        @endforeach
+                    @endforeach
+                </select>
+            </div>
+            <div class="column">
+                <div class="ui basic buttons">
+                    <button id="top-btn" class="ui button">Top</button>
+                    <button id="clear-btn" class="ui button">Clear</button>
+                    <button id="refresh" class="ui button">Redraw</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="col-lg-12">
-        @foreach($results as $key => $result)
-            <h4>{{ $key }}</h4>
-            <table class="table">
+    @foreach($results as $key => $result)
+        <h2 class="ui header">{{ $key }}</h2>
+        <table class="ui sortable celled table">
+            <thead>
                 <tr>
                     @foreach($result->getSchema()->getFields() as $field)
                         <th>{{ $field->name }}</th>
                     @endforeach
                 </tr>
+            </thead>
+            <tbody>
                 @foreach($result->getRows() as $row)
                     <tr>
                         @foreach($row->getF() as $field)
@@ -52,19 +56,31 @@
                         @endforeach
                     </tr>
                 @endforeach
-            </table>
-        @endforeach
-    </div>
+            </tbody>
+        </table>
+    @endforeach
 @endsection
 
 @section('footer')
+    {{--Make table sortable--}}
+    <script type="text/javascript" src="{{ asset('js/all.js') }}"></script>
+    <script>
+        $('table').tablesort();
+        $('thead th.subreddit').data('sortBy', function(th, td, tablesort) {
+            return td.toLowerCase();
+        });
+    </script>
     {{--Google Chart--}}
-    {!! Lava::render('LineChart', 'myFancyChart', 'myStocks') !!}
+    {!! Lava::render('LineChart', 'myFancyChart', 'activityChart') !!}
     <script>
         function updateChart() {
-            //TODO: SEND THE CORRECT VALUES
+            // Loading dimmmer
+            $('.segment').dimmer('show');
+            // Ajax request to get new chart data
             $.getJSON('big-data/updateChart', {subreddits: $('select').val()}, function (dataTableJson) {
                 lava.loadData('myFancyChart', dataTableJson, function (chart) {
+                    // Remove loading dimmer
+                    $('.segment').dimmer('hide');
                     console.log(chart);
                 });
             });
@@ -76,7 +92,10 @@
         var $multiSelect = $('select').select2();
         $multiSelect.val([{!! $default_vals !!}]).trigger("change");
         // Reload the chart with defaults
-        $("#default-btn").click(updateChart);
+        $("#top-btn").on("click", function () {
+            $multiSelect.val([{!! $default_vals !!}]).trigger("change");
+            updateChart();
+        });
         $("#clear-btn").on("click", function () {
             $multiSelect.val(null).trigger("change");
         });

@@ -43,7 +43,7 @@ class GoogleAPI {
         {
             // Load the default (top 5) subreddits
             $subreddits = [];
-            $popular_subreddits = $this->reddit->getPopularSubreddits(5);
+            $popular_subreddits = $this->reddit->getDefaultSubreddits(5);
             // Build list of top subreddits
             foreach ($popular_subreddits->data->children as $sub)
             {

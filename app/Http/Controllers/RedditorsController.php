@@ -29,7 +29,7 @@ class RedditorsController extends Controller {
      */
     public function index()
     {
-        return response()->view('redditor.index');
+        return response()->view('redditor.index', ['tagline' => 'Look up a specific redditor']);
     }
 
     /**
@@ -57,6 +57,7 @@ class RedditorsController extends Controller {
         $active_hours = $this->redditor->getUserSubmitted($user)->activeHours();
 
         return response()->view('redditor.show', [
+            'tagline'                 => 'An in deapth creep of ' . $redditor->name,
             'redditor'                 => $redditor,
             'redditor_for'             => $redditor_for,
             'subreddits'               => $subreddits,

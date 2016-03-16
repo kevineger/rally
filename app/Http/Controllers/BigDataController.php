@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Google_Client;
 use Khill\Lavacharts\Charts\Chart;
+use Khill\Lavacharts\Configs\TextStyle;
 use Lava;
 use phpRAW\phpRAW;
 
@@ -37,6 +38,7 @@ class BigDataController extends Controller {
         $subreddits = Google::query('subreddits');
         $best_hours = Google::query('best_hours');
         $time_usage = Google::query('time_usage');
+//        dd($time_usage);
 
         $results = [];
         $results['Best Time to Post on Reddit'] = $best_hours;
@@ -44,11 +46,13 @@ class BigDataController extends Controller {
         // Generate Time Usage chart
         $chart = Lava::LineChart('myFancyChart');
         $chart->title("Activity Over Time");
+        $chart->titleTextStyle(new TextStyle(['fontSize' => 20]));
         $chart->height(500);
         $chart->datatable($this->chart_data->getTimeUsage($time_usage));
 
 
         return response()->view('big-data.index', [
+            'tagline'      => 'What\'s going on in the big picture?',
             'results'      => $results,
             'subreddits'   => $subreddits,
             'default_vals' => Google::getSubredditsList()
@@ -58,10 +62,10 @@ class BigDataController extends Controller {
     public function updateChart(Request $request)
     {
         $time_usage = Google::query('time_usage', $request->input('subreddits'));
-        $chart = Lava::LineChart('myFancyChart');
+        /*$chart = Lava::LineChart('myFancyChart');
         $chart->title("Activity Over Time IT CHANGED");
         $chart->height(500);
-        $chart->datatable($this->chart_data->getTimeUsage($time_usage));
+        $chart->datatable($this->chart_data->getTimeUsage($time_usage));*/
 
         return $this->chart_data->getTimeUsage($time_usage)->toJson();
     }

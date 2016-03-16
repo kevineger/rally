@@ -1,2 +1,38 @@
-// @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+.page-header {
+  margin-bottom: 50px;
+}
 
+//
+.activity_chart_container {
+  position: relative;
+}
+
+#activity_chart_div {
+  position: absolute;
+  top: 0px;
+  right: 0;
+  bottom: 0px;
+  left: 0;
+}
+
+ul.subreddits-list {
+  columns: 2;
+  -webkit-columns: 2;
+  -moz-columns: 2;
+}
+
+.dont-break-out {
+
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+
+}

@@ -16,8 +16,10 @@
     {{---Required Scripts------------------------------------------------------}}
     {{--jQuery--}}
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    {{--Bootstrap--}}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    {{--Semantic CSS--}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css">
+    {{--Application CSS--}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     {{-------------------------------------------------------------------------}}
 
     {{---Fonts-----------------------------------------------------------------}}
@@ -30,11 +32,14 @@
 </head>
 <body>
 
+@include('navbar')
 
-<div class="container">
+<div class="ui container" style="padding-top: 100px;">
     @yield('content')
 </div>
 
+{{--Semantic JS--}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js"></script>
 @yield('footer')
 
 </body>

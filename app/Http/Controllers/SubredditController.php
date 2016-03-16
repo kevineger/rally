@@ -9,11 +9,13 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use phpRAW\phpRAW;
 
-class ClustersController extends Controller {
+class SubredditController extends Controller {
 
     protected $client;
     protected $cluster;
+    protected $phpraw;
 
     public function __construct()
     {
@@ -22,18 +24,21 @@ class ClustersController extends Controller {
         $this->client->useApplicationDefaultCredentials();
         $this->client->addScope(\Google_Service_Bigquery::BIGQUERY);
 
+        $this->phpraw = new phpRAW();
+
         $this->cluster = new ClusterRepository($this->client);
     }
 
     /**
-     * Display the view to specify subreddit.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        return response()->view('cluster.index');
-//        $this->dispatchFrom('App\Jobs\ClusterSubreddit', $request);
+        return response()->view('subreddit.index', [
+            'tagline' => 'View information about a specific subreddit'
+        ]);
     }
 
     /**
@@ -44,7 +49,15 @@ class ClustersController extends Controller {
      */
     public function show(Request $request)
     {
-        return response()->view('cluster.show', ['subreddit' => $request->get('subreddit')]);
+        $subreddit = $request->get('subreddit');
+
+        $about = $this->phpraw->aboutSubreddit($subreddit);
+
+        return response()->view('subreddit.show', [
+            'subreddit' => $subreddit,
+            'about'     => $about->data,
+            'tagline'   => 'A look at /r/' . $subreddit
+        ]);
     }
 
     /**
@@ -61,8 +74,7 @@ class ClustersController extends Controller {
         $cluster_image = Cluster::where('name', $subreddit)->first();
 
         // Else, perform new clustering
-        if ($cluster_image == null)
-        {
+        if ( $cluster_image == null ) {
             // Perform the clustering and return the path to image.
             $path = $this->cluster->getSubredditSubmissionHistory($subreddit);
 
