@@ -71,6 +71,18 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 type: "GET",
+                url: "/test"
+            }).success(function (data) {
+                $('.cluster-container').append('<p>First AJAX request is complete</p>');
+            }).error(function (msg) {
+                alert("There was an error doing the first ajax request");
+            });
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "GET",
                 url: "/subreddit/get-data",
                 data: {
                     subreddit: '{!! $subreddit !!}'
@@ -80,6 +92,18 @@
                 $('.cluster-container').append('<img class="ui fluid image" src="/' + data.path_to_image + '" alt="Cluster Data">');
             }).error(function (msg) {
                 alert("Error: " + msg);
+            });
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "GET",
+                url: "/test"
+            }).success(function (data) {
+                $('.cluster-container').append('<p>Second AJAX request is complete</p>');
+            }).error(function (msg) {
+                alert("There was an error doing the second ajax request");
             });
         });
     </script>

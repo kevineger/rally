@@ -11,6 +11,9 @@
 |
 */
 
+Route::get('test', function () {
+    return "test is a success";
+});
 Route::get('/', function () {
     return view('home');
 });
